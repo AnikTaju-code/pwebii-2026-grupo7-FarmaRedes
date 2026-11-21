@@ -4,7 +4,12 @@ import jwt from 'jsonwebtoken';import bcrypt from 'bcryptjs';import {randomUUID}
 import {medicamentos,haversine} from './catalog.js';import {carregar,salvar} from './store.js';
 import {RegraErro,validarItens,calcularEntrega,reservarStock,devolverStock} from './logic.js';import {iniciarPagamento,normalizarTelefone} from './pagamentos.js';import {enviarSMS,smsConfigurado} from './sms.js';
 const app=express();const port=Number(process.env.PORT||3001);const secret=process.env.JWT_SECRET||(process.env.NODE_ENV==='production'?null:'dev-only-change-this-secret');if(!secret)throw new Error('Configure JWT_SECRET no servidor.');let db=carregar();
-app.use(helmet());app.use(cors({origin:(process.env.FRONTEND_ORIGIN||'http://localhost:5173').split(',')}));app.use(express.json({limit:'30kb'}));app.use('/api/auth',rateLimit({windowMs:15*60*1000,limit:60,standardHeaders:'draft-7',legacyHeaders:false}));
+const cspDirectives={
+ ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+ 'connect-src':["'self'",'https://overpass-api.de'],
+ 'img-src':["'self'",'data:','https://*.tile.openstreetmap.org']
+};
+app.use(helmet({contentSecurityPolicy:{directives:cspDirectives}}));app.use(cors({origin:(process.env.FRONTEND_ORIGIN||'http://localhost:5173').split(',')}));app.use(express.json({limit:'30kb'}));app.use('/api/auth',rateLimit({windowMs:15*60*1000,limit:60,standardHeaders:'draft-7',legacyHeaders:false}));
 const clientes=new Set();const notify=(event,data)=>{for(const res of clientes){res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);}};
 function token(user){return jwt.sign({id:user.id,nome:user.nome,perfil:user.perfil,farmaciaId:user.farmaciaId||null},secret,{expiresIn:'8h'});}
 function auth(req,res,next){const raw=(req.headers.authorization||'').replace(/^Bearer\s+/i,'');try{req.user=jwt.verify(raw,secret);next();}catch{res.status(401).json({erro:'Sessão inválida ou expirada.'});}}
