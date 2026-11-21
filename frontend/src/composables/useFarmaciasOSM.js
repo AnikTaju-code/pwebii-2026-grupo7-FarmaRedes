@@ -16,26 +16,31 @@ export function useFarmaciasOSM() {
       const resposta = await fetch('https://overpass-api.de/api/interpreter', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
-        body: new URLSearchParams({ data: CONSULTA })
+        body: new URLSearchParams({ data: CONSULTA }),
       });
       if (!resposta.ok) throw new Error('O serviço de mapas não respondeu.');
       const dados = await resposta.json();
-      locais.value = dados.elements.map((item) => {
-        const lat = item.lat ?? item.center?.lat;
-        const lng = item.lon ?? item.center?.lon;
-        if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
-        return {
-          id: `${item.type}-${item.id}`,
-          nome: item.tags?.name || 'Farmácia sem nome identificado',
-          lat,
-          lng,
-          endereco: [item.tags?.['addr:street'], item.tags?.['addr:suburb']].filter(Boolean).join(', '),
-          origem: 'OpenStreetMap'
-        };
-      }).filter(Boolean);
+      locais.value = dados.elements
+        .map(item => {
+          const lat = item.lat ?? item.center?.lat;
+          const lng = item.lon ?? item.center?.lon;
+          if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+          return {
+            id: `${item.type}-${item.id}`,
+            nome: item.tags?.name || 'Farmácia sem nome identificado',
+            lat,
+            lng,
+            endereco: [item.tags?.['addr:street'], item.tags?.['addr:suburb']]
+              .filter(Boolean)
+              .join(', '),
+            origem: 'OpenStreetMap',
+          };
+        })
+        .filter(Boolean);
       return locais.value;
     } catch (e) {
-      erro.value = 'Não foi possível carregar as localizações públicas. Pode continuar a consultar as farmácias disponíveis no catálogo.';
+      erro.value =
+        'Não foi possível carregar as localizações públicas. Pode continuar a consultar as farmácias disponíveis no catálogo.';
       return [];
     } finally {
       carregando.value = false;

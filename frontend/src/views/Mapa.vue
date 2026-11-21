@@ -1,10 +1,130 @@
 <script setup>
-import {ref,onMounted,onBeforeUnmount,watch} from 'vue';import L from 'leaflet';import {useApp} from '../stores/app';import {MapPin,Navigation,ShoppingBag,Phone,Clock} from 'lucide-vue-next';import {useFarmaciasOSM} from '../composables/useFarmaciasOSM';
-const s=useApp();const {locais,carregando,erro:erroOSM,carregar:carregarOSM}=useFarmaciasOSM();const mapEl=ref(null),geoMsg=ref(''),userLoc=ref(null);let map,markers,osmMarkers;
-function desenhar(){if(!map||!s.farmacias.length)return;markers?.clearLayers();s.farmacias.forEach(f=>{const icon=L.divIcon({className:'custom-pin',html:'<div class="pin-inner">✚</div>',iconSize:[36,42],iconAnchor:[18,40]});const m=L.marker([f.lat,f.lng],{icon}).bindPopup(`Farmácia registada`);m.addTo(markers);});}
-function desenharOSM(){if(!map||!osmMarkers)return;osmMarkers.clearLayers();locais.value.forEach(f=>{const icon=L.divIcon({className:'custom-pin osm-pin',html:'<div class="pin-inner">+</div>',iconSize:[30,36],iconAnchor:[15,34]});L.marker([f.lat,f.lng],{icon}).bindPopup(`Farmácia no OpenStreetMap`).addTo(osmMarkers);});}
-function focar(f){if(s.farmacias.some(x=>x.id===f.id))s.setFarmacia(f.id);map?.flyTo([f.lat,f.lng],15,{duration:.8});}
-function localizar(){if(!navigator.geolocation){geoMsg.value='Geolocalização não suportada.';return;}navigator.geolocation.getCurrentPosition(p=>{const {latitude,longitude}=p.coords;userLoc.value={lat:latitude,lng:longitude};L.circleMarker([latitude,longitude],{radius:9,color:'#0b8864',fillOpacity:0.7}).addTo(map).bindPopup('A sua localização');map.flyTo([latitude,longitude],13);geoMsg.value='Localização obtida.';},()=>geoMsg.value='Não foi possível obter a localização. Use o mapa manualmente.',{enableHighAccuracy:false,timeout:7000});}
-onMounted(async()=>{if(!s.farmacias.length)await s.carregar();map=L.map(mapEl.value,{scrollWheelZoom:false}).setView([-25.965,32.583],12);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'}).addTo(map);markers=L.layerGroup().addTo(map);osmMarkers=L.layerGroup().addTo(map);desenhar();await carregarOSM();desenharOSM();setTimeout(()=>map.invalidateSize(),100);});onBeforeUnmount(()=>map?.remove());watch(()=>s.farmacias,desenhar);
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
+import L from 'leaflet';
+import { useApp } from '../stores/app';
+import { MapPin, Navigation, ShoppingBag, Phone, Clock } from 'lucide-vue-next';
+import { useFarmaciasOSM } from '../composables/useFarmaciasOSM';
+const s = useApp();
+const { locais, carregando, erro: erroOSM, carregar: carregarOSM } = useFarmaciasOSM();
+const mapEl = ref(null),
+  geoMsg = ref(''),
+  userLoc = ref(null);
+let map, markers, osmMarkers;
+function desenhar() {
+  if (!map || !s.farmacias.length) return;
+  markers?.clearLayers();
+  s.farmacias.forEach(f => {
+    const icon = L.divIcon({
+      className: 'custom-pin',
+      html: '<div class="pin-inner">✚</div>',
+      iconSize: [36, 42],
+      iconAnchor: [18, 40],
+    });
+    const m = L.marker([f.lat, f.lng], { icon }).bindPopup(`Farmácia registada`);
+    m.addTo(markers);
+  });
+}
+function desenharOSM() {
+  if (!map || !osmMarkers) return;
+  osmMarkers.clearLayers();
+  locais.value.forEach(f => {
+    const icon = L.divIcon({
+      className: 'custom-pin osm-pin',
+      html: '<div class="pin-inner">+</div>',
+      iconSize: [30, 36],
+      iconAnchor: [15, 34],
+    });
+    L.marker([f.lat, f.lng], { icon }).bindPopup(`Farmácia no OpenStreetMap`).addTo(osmMarkers);
+  });
+}
+function focar(f) {
+  if (s.farmacias.some(x => x.id === f.id)) s.setFarmacia(f.id);
+  map?.flyTo([f.lat, f.lng], 15, { duration: 0.8 });
+}
+function localizar() {
+  if (!navigator.geolocation) {
+    geoMsg.value = 'Geolocalização não suportada.';
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    p => {
+      const { latitude, longitude } = p.coords;
+      userLoc.value = { lat: latitude, lng: longitude };
+      L.circleMarker([latitude, longitude], { radius: 9, color: '#0b8864', fillOpacity: 0.7 })
+        .addTo(map)
+        .bindPopup('A sua localização');
+      map.flyTo([latitude, longitude], 13);
+      geoMsg.value = 'Localização obtida.';
+    },
+    () => (geoMsg.value = 'Não foi possível obter a localização. Use o mapa manualmente.'),
+    { enableHighAccuracy: false, timeout: 7000 },
+  );
+}
+onMounted(async () => {
+  if (!s.farmacias.length) await s.carregar();
+  map = L.map(mapEl.value, { scrollWheelZoom: false }).setView([-25.965, 32.583], 12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap contributors',
+  }).addTo(map);
+  markers = L.layerGroup().addTo(map);
+  osmMarkers = L.layerGroup().addTo(map);
+  desenhar();
+  await carregarOSM();
+  desenharOSM();
+  setTimeout(() => map.invalidateSize(), 100);
+});
+onBeforeUnmount(() => map?.remove());
+watch(() => s.farmacias, desenhar);
 </script>
-<template><div class="container page"><div class="page-heading"><div><div class="section-overline">LOCALIZAÇÃO</div><h1>Farmácias no mapa</h1><p>Escolha uma farmácia em Maputo e consulte o seu catálogo.</p></div><button class="button outline-button" @click="localizar"><Navigation :size="17"/> A minha localização</button></div><div v-if="geoMsg" class="alert">{{geoMsg}}</div><div v-if="carregando" class="alert">A carregar farmácias identificadas no OpenStreetMap…</div><div v-else-if="erroOSM" class="alert">{{erroOSM}}</div><div class="map-layout"><aside class="map-sidebar"><h3>Farmácias registadas ({{s.farmacias.length}})</h3><p class="small-detail">Outras localizações disponíveis no OpenStreetMap: {{locais.length}}.</p><div v-for="f in s.farmacias" :key="f.id" :class="['pharmacy-list-card',s.farmaciaActual===f.id?'active':'']"><div class="pharmacy-top"><span class="round-icon"><MapPin :size="19"/></span><div><h4>{{f.nome}}</h4><p>{{f.bairro}} · Maputo</p></div></div><p class="small-detail"><Clock :size="14"/> {{f.horario}}</p><p class="small-detail"><Phone :size="14"/> {{f.telefone}}</p><div class="pharmacy-actions"><button @click="focar(f)" class="text-action">Ver no mapa</button><router-link to="/" class="button button-small primary" @click="s.setFarmacia(f.id)"><ShoppingBag :size="15"/> Comprar</router-link></div></div><p class="hint">Fonte geográfica: OpenStreetMap, consulta pública de Maputo. Stock e preços são mantidos pelo catálogo da aplicação.</p></aside><div class="map-box" ref="mapEl"></div></div></div></template>
+<template>
+  <div class="container page">
+    <div class="page-heading">
+      <div>
+        <div class="section-overline">LOCALIZAÇÃO</div>
+        <h1>Farmácias no mapa</h1>
+        <p>Escolha uma farmácia em Maputo e consulte o seu catálogo.</p>
+      </div>
+      <button class="button outline-button" @click="localizar">
+        <Navigation :size="17" /> A minha localização
+      </button>
+    </div>
+    <div v-if="geoMsg" class="alert">{{ geoMsg }}</div>
+    <div v-if="carregando" class="alert">A carregar farmácias identificadas no OpenStreetMap…</div>
+    <div v-else-if="erroOSM" class="alert">{{ erroOSM }}</div>
+    <div class="map-layout">
+      <aside class="map-sidebar">
+        <h3>Farmácias registadas ({{ s.farmacias.length }})</h3>
+        <p class="small-detail">
+          Outras localizações disponíveis no OpenStreetMap: {{ locais.length }}.
+        </p>
+        <div
+          v-for="f in s.farmacias"
+          :key="f.id"
+          :class="['pharmacy-list-card', s.farmaciaActual === f.id ? 'active' : '']"
+        >
+          <div class="pharmacy-top">
+            <span class="round-icon"><MapPin :size="19" /></span>
+            <div>
+              <h4>{{ f.nome }}</h4>
+              <p>{{ f.bairro }} · Maputo</p>
+            </div>
+          </div>
+          <p class="small-detail"><Clock :size="14" /> {{ f.horario }}</p>
+          <p class="small-detail"><Phone :size="14" /> {{ f.telefone }}</p>
+          <div class="pharmacy-actions">
+            <button @click="focar(f)" class="text-action">Ver no mapa</button
+            ><router-link to="/" class="button button-small primary" @click="s.setFarmacia(f.id)"
+              ><ShoppingBag :size="15" /> Comprar</router-link
+            >
+          </div>
+        </div>
+        <p class="hint">
+          Fonte geográfica: OpenStreetMap, consulta pública de Maputo. Stock e preços são mantidos
+          pelo catálogo da aplicação.
+        </p>
+      </aside>
+      <div class="map-box" ref="mapEl"></div>
+    </div>
+  </div>
+</template>

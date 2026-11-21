@@ -1,6 +1,6 @@
-import {defineStore} from 'pinia';
+import { defineStore } from 'pinia';
 import api from '../services/api';
-import {reconcileCart} from './cart.js';
+import { reconcileCart } from './cart.js';
 
 function actualizarCarrinho(store) {
   const result = reconcileCart(store.carrinho, store.stock, store.farmaciaActual);
@@ -17,31 +17,34 @@ export const useApp = defineStore('app', {
     carrinho: [],
     farmaciaActual: localStorage.getItem('fr_farmacia') || '',
     aviso: '',
-    evento: null
+    evento: null,
   }),
   getters: {
     autenticado: state => !!state.utilizador,
     gestor: state => state.utilizador?.perfil === 'gestor',
-    itensCarrinho: state => state.carrinho.map(item => ({
-      ...item,
-      med: state.medicamentos.find(med => med.id === item.medicamentoId),
-      linha: state.stock.find(row =>
-        row.medicamentoId === item.medicamentoId && row.farmaciaId === state.farmaciaActual
-      )
-    })),
+    itensCarrinho: state =>
+      state.carrinho.map(item => ({
+        ...item,
+        med: state.medicamentos.find(med => med.id === item.medicamentoId),
+        linha: state.stock.find(
+          row =>
+            row.medicamentoId === item.medicamentoId && row.farmaciaId === state.farmaciaActual,
+        ),
+      })),
     subtotal() {
-      return this.itensCarrinho.reduce((total, item) =>
-        total + (item.linha?.preco || 0) * item.quantidade, 0
+      return this.itensCarrinho.reduce(
+        (total, item) => total + (item.linha?.preco || 0) * item.quantidade,
+        0,
       );
     },
-    quantidadeCarrinho: state => state.carrinho.reduce((total, item) => total + item.quantidade, 0)
+    quantidadeCarrinho: state => state.carrinho.reduce((total, item) => total + item.quantidade, 0),
   },
   actions: {
     async carregar() {
       const [farmacias, medicamentos, stock] = await Promise.all([
         api.get('/farmacias'),
         api.get('/catalogo'),
-        api.get('/stock')
+        api.get('/stock'),
       ]);
       this.farmacias = farmacias.data;
       this.medicamentos = medicamentos.data;
@@ -66,23 +69,24 @@ export const useApp = defineStore('app', {
       }
     },
     adicionar(medicamentoId) {
-      const linha = this.stock.find(row =>
-        row.farmaciaId === this.farmaciaActual && row.medicamentoId === medicamentoId
+      const linha = this.stock.find(
+        row => row.farmaciaId === this.farmaciaActual && row.medicamentoId === medicamentoId,
       );
       if (!linha || !linha.quantidade) return this.notificar('Sem stock disponível.');
       const item = this.carrinho.find(row => row.medicamentoId === medicamentoId);
       const quantidade = item?.quantidade || 0;
-      if (quantidade >= linha.quantidade) return this.notificar('Quantidade máxima em stock atingida.');
+      if (quantidade >= linha.quantidade)
+        return this.notificar('Quantidade máxima em stock atingida.');
       if (item) item.quantidade++;
-      else this.carrinho.push({medicamentoId, quantidade: 1});
+      else this.carrinho.push({ medicamentoId, quantidade: 1 });
       this.notificar('Adicionado ao carrinho.');
     },
     alterarQtd(id, quantidade) {
       const item = this.carrinho.find(row => row.medicamentoId === id);
       if (!item) return;
-      const max = this.stock.find(row =>
-        row.farmaciaId === this.farmaciaActual && row.medicamentoId === id
-      )?.quantidade || 0;
+      const max =
+        this.stock.find(row => row.farmaciaId === this.farmaciaActual && row.medicamentoId === id)
+          ?.quantidade || 0;
       if (quantidade <= 0 || max <= 0) {
         this.carrinho = this.carrinho.filter(row => row.medicamentoId !== id);
       } else {
@@ -111,10 +115,12 @@ export const useApp = defineStore('app', {
           await this.carregar();
           window.dispatchEvent(new CustomEvent('fr:refresh'));
         } catch {
-          this.notificar(error instanceof Error ? error.message : 'Não foi possível actualizar os dados.');
+          this.notificar(
+            error instanceof Error ? error.message : 'Não foi possível actualizar os dados.',
+          );
         }
       });
       this.evento = es;
-    }
-  }
+    },
+  },
 });

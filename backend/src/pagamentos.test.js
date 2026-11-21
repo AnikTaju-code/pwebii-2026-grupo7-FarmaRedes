@@ -17,7 +17,16 @@ test('recusa telefone inválido e aceita pagamento presencial', () => {
   assert.equal(normalizarTelefone('+258 84 123 4567'), '841234567');
 });
 test('modo de demonstração funciona sem variável de ambiente', () => {
-  const old = process.env.PAYMENT_MODE; delete process.env.PAYMENT_MODE;
-  try { assert.equal(iniciarPagamento({metodo:'mpesa',telefone:'841234567',valor:200,referencia:'X'}).estado,'pendente_demo'); }
-  finally { if(old===undefined)delete process.env.PAYMENT_MODE;else process.env.PAYMENT_MODE=old; }
+  const old = process.env.PAYMENT_MODE;
+  delete process.env.PAYMENT_MODE;
+  try {
+    assert.equal(
+      iniciarPagamento({ metodo: 'mpesa', telefone: '841234567', valor: 200, referencia: 'X' })
+        .estado,
+      'pendente_demo',
+    );
+  } finally {
+    if (old === undefined) delete process.env.PAYMENT_MODE;
+    else process.env.PAYMENT_MODE = old;
+  }
 });

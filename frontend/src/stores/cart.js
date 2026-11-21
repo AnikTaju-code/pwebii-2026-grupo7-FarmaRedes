@@ -3,9 +3,9 @@ export function reconcileCart(cart, stock, farmaciaId) {
   const items = [];
 
   for (const item of cart) {
-    const available = stock.find(
-      (row) => row.farmaciaId === farmaciaId && row.medicamentoId === item.medicamentoId
-    )?.quantidade ?? 0;
+    const available =
+      stock.find(row => row.farmaciaId === farmaciaId && row.medicamentoId === item.medicamentoId)
+        ?.quantidade ?? 0;
     const quantidade = Math.min(item.quantidade, available);
 
     if (quantidade !== item.quantidade) changed = true;
