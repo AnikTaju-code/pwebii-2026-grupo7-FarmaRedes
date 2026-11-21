@@ -2,7 +2,7 @@ services:
   - type: web
     name: farmarede-api-grupo7
     runtime: node
-    plan: starter
+    plan: free
     buildCommand: npm --prefix backend ci && npm --prefix frontend ci && npm --prefix frontend run build
     startCommand: npm --prefix backend start
     healthCheckPath: /api/saude
@@ -15,15 +15,9 @@ services:
         value: demo
       - key: FRONTEND_ORIGIN
         value: https://aniktaju-code.github.io
-      - key: DATA_DIR
-        value: /var/data
       - key: TWILIO_ACCOUNT_SID
         sync: false
       - key: TWILIO_AUTH_TOKEN
         sync: false
       - key: TWILIO_FROM
         sync: false
-    disk:
-      name: farmarede-data
-      mountPath: /var/data
-      sizeGB: 1
