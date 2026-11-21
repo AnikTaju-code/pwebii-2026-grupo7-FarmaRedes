@@ -1,112 +1,361 @@
-# FarmaRede — Projecto final PWEB II · Grupo 7
+<div align="center">
 
-Protótipo académico em Vue 3, Vite, Pinia, Leaflet e Node.js.
+# 💊 FarmaRede
 
-## Duas áreas
-- **Cliente**: cria conta, consulta medicamentos de farmácias registadas, escolhe farmácia, faz encomendas e escolhe entrega/recolha.
-- **Farmácia**: cria conta, coloca nome, endereço, telefone e coordenadas tocando no mapa; mantém stock, preços e acompanha as suas encomendas.
+### Farmácias mais próximas. Medicamentos mais acessíveis. Uma experiência conectada.
 
-Os novos registos começam vazios: não há contas, encomendas, farmácias ou stocks fictícios.
-O catálogo contém nomes genéricos de medicamentos como referência, sem afirmar stock disponível.
+**Uma plataforma web para pesquisar medicamentos, encontrar farmácias, consultar disponibilidade e acompanhar encomendas.**
 
-## Localmente
+[![Vue 3](https://img.shields.io/badge/Frontend-Vue%203-42b883?style=for-the-badge&logo=vuedotjs&logoColor=white)](https://vuejs.org/)
+[![Vite](https://img.shields.io/badge/Build-Vite-646cff?style=for-the-badge&logo=vite&logoColor=white)](https://vite.dev/)
+[![Node.js](https://img.shields.io/badge/Backend-Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
+[![Express](https://img.shields.io/badge/API-Express-333333?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
+[![Twilio](https://img.shields.io/badge/SMS-Twilio-F22F46?style=for-the-badge&logo=twilio&logoColor=white)](https://www.twilio.com/)
 
-Instalar Node.js 20 ou superior.
+**Projecto académico · Programação Web II · ISUTC**
 
-Terminal 1:
-```bash
+[Aplicação](#-acesso-à-aplicação) · [Funcionalidades](#-o-que-construímos) · [Dados](#-fontes-de-dados) · [Arquitectura](#-arquitectura-do-sistema) · [Instalação](#-como-executamos-localmente) · [Equipa](#-equipa-do-grupo-7)
+
+</div>
+
+---
+
+## 🌐 Acesso à aplicação
+
+| Recurso | Endereço |
+|:--|:--|
+| **Código-fonte público** | [GitHub — FarmaRede](https://github.com/AnikTaju-code/FarmaRede) |
+| **Aplicação no GitHub Pages** | **Pendente de confirmação:** inserir aqui o endereço público da aplicação após verificar a publicação |
+
+> [!WARNING]
+> O endereço do GitHub Pages ainda não foi confirmado. Antes da entrega, substituímos esta indicação pelo URL real e verificamos que a aplicação abre num navegador sem autenticação.
+
+## 🌍 A nossa proposta
+
+Desenvolvemos o **FarmaRede** para aproximar clientes e farmácias numa única plataforma digital. Queremos facilitar a procura de medicamentos e a consulta de disponibilidade, ao mesmo tempo que disponibilizamos às farmácias ferramentas para gerir o seu catálogo, stock e encomendas.
+
+A nossa solução organiza a experiência em dois perfis principais: **cliente** e **gestor de farmácia**. No percurso de compra, integramos validação de números para M-Pesa e e-Mola, pagamentos em **modo de demonstração** e notificações SMS através da API Twilio, quando configurada.
+
+> [!IMPORTANT]
+> **Transparência funcional:** os pagamentos M-Pesa/e-Mola aqui descritos são validados e demonstrados; **não constituem cobranças reais**. Na conta experimental do Twilio, o envio de SMS está sujeito às restrições do fornecedor, incluindo modelos de mensagem predefinidos.
+
+## ✨ O que construímos
+
+| Área | O que disponibilizamos |
+|:--|:--|
+| 🔎 **Pesquisa** | Navegação por medicamentos, filtros e visualização de detalhes |
+| 📍 **Localização** | Consulta de farmácias no mapa e utilização de coordenadas para proximidade |
+| 🏪 **Farmácias** | Registo e gestão de dados da farmácia e respectivo stock |
+| 🛒 **Carrinho** | Selecção de produtos e preparação de encomendas |
+| 📦 **Pedidos** | Registo, histórico e acompanhamento dos estados das encomendas |
+| 💳 **Pagamentos** | Validação dos números M-Pesa (84/85) e e-Mola (86/87), além de pagamento presencial e demonstração |
+| 📲 **SMS** | Integração com Twilio para notificações, mediante credenciais e permissões do fornecedor |
+| 🔄 **Actualizações** | Comunicação de eventos de alterações de stock, pedidos e farmácias a partir do backend |
+| 🔐 **Acesso** | Autenticação e diferenciação de operações por perfil |
+
+### 👤 Percurso do cliente
+
+```mermaid
+flowchart LR
+    A[Pesquisar medicamento] --> B[Escolher farmácia]
+    B --> C[Adicionar ao carrinho]
+    C --> D[Criar encomenda]
+    D --> E[Escolher forma de pagamento]
+    E --> F[Acompanhar estado]
+    F --> G[Notificação SMS opcional]
+```
+
+### 🏪 Percurso do gestor
+
+```mermaid
+flowchart LR
+    A[Registar farmácia] --> B[Configurar dados]
+    B --> C[Gerir stock e preços]
+    C --> D[Receber encomendas]
+    D --> E[Actualizar estado do pedido]
+```
+
+## 🗺️ Fontes de dados
+
+Utilizamos **OpenStreetMap (OSM)** como fonte de informação geográfica para a localização de farmácias na área de Maputo, Moçambique. A consulta é organizada no módulo `frontend/src/composables/useFarmaciasOSM.js`, separado dos componentes de apresentação.
+
+| Fonte | Dados e utilização | Referência |
+|:--|:--|:--|
+| **OpenStreetMap** | Localizações e informação geográfica pública de farmácias na região de Maputo | [openstreetmap.org](https://www.openstreetmap.org/) |
+| **Catálogo da aplicação** | Produtos, preços e disponibilidade registados no sistema para demonstração | Dados internos do projecto; **não** constituem um dataset público de stock farmacêutico |
+
+**Origem e licença:** © OpenStreetMap contributors. Os dados OSM são disponibilizados sob a [Open Database License (ODbL)](https://www.openstreetmap.org/copyright). Respeitamos a atribuição exigida pela fonte e distinguimos os pontos geográficos públicos das farmácias e dos produtos registados na nossa aplicação.
+
+**Tratamento dos dados:** procuramos apresentar estados de carregamento, erro e ausência de resultados. A existência de um ponto no mapa não garante que o estabelecimento esteja registado na plataforma nem que possua determinado medicamento em stock.
+
+## 🧩 Arquitectura do sistema
+
+Organizámos a aplicação numa arquitectura cliente-servidor. O frontend Vue comunica com uma API HTTP Express, que aplica as regras de negócio e persiste os dados. A integração Twilio é executada **exclusivamente no backend** para manter as credenciais fora do navegador.
+
+```mermaid
+flowchart TB
+    U[👤 Cliente / 🏪 Gestor] --> V[Frontend Vue 3 + Vite]
+    V -->|HTTP /api| A[Backend Node.js + Express]
+    A --> R[Regras de negócio]
+    R --> P[Pagamentos de demonstração]
+    R --> S[Gestão de farmácias, stock e pedidos]
+    S --> D[(Persistência local JSON)]
+    A -->|API externa| T[Twilio SMS]
+```
+
+### 🛠️ Tecnologias
+
+| Camada | Tecnologias e utilização |
+|:--|:--|
+| Interface | Vue 3, componentes `.vue`, Vite, CSS |
+| Comunicação HTTP | Axios no frontend; Express no backend |
+| Backend | Node.js, JavaScript (módulos ES) |
+| Segurança HTTP | Helmet, CORS e limitação de pedidos nas rotas de autenticação |
+| Persistência | Ficheiro JSON gerido por `store.js` |
+| Localização | Coordenadas e cálculo de distância; módulo de farmácias/OSM |
+| SMS | API REST Twilio |
+| Testes | Test runner nativo do Node.js |
+| Controlo de versões | Git e GitHub |
+
+## 🗂️ Organização do projecto
+
+```text
+FarmaRede/
+├── backend/
+│   ├── src/
+│   │   ├── server.js            # API e rotas
+│   │   ├── logic.js             # Regras de negócio
+│   │   ├── catalog.js           # Catálogo e distância
+│   │   ├── store.js             # Persistência JSON
+│   │   ├── pagamentos.js        # Validação dos pagamentos
+│   │   ├── pagamentos.test.js   # Testes automatizados
+│   │   └── sms.js               # Integração Twilio
+│   ├── .env.example             # Exemplo de configuração
+│   └── package.json
+├── frontend/
+│   ├── src/
+│   │   ├── assets/              # Estilos
+│   │   ├── components/          # Componentes reutilizáveis
+│   │   ├── composables/         # Lógica reutilizável
+│   │   ├── services/api.js      # Cliente HTTP
+│   │   ├── stores/              # Estado da aplicação
+│   │   ├── views/               # Páginas
+│   │   ├── App.vue
+│   │   ├── main.js
+│   │   └── router.js
+│   ├── index.html
+│   ├── vite.config.js
+│   └── package.json
+└── README.md
+```
+
+## 🚀 Como executamos localmente
+
+### Pré-requisitos
+
+Precisamos de **Node.js**, **npm** e **Git**. Os comandos abaixo são apresentados para **PowerShell no Windows**, a partir da pasta principal do repositório.
+
+**1. Obter o projecto**
+
+```powershell
+git clone https://github.com/AnikTaju-code/FarmaRede.git
+cd FarmaRede
+```
+
+> Para trabalhar especificamente na branch de integração do Sousa, executamos `git switch Sousa` após `git fetch origin`. Não alteramos a branch principal sem coordenação da equipa.
+
+**2. Configurar o backend**
+
+```powershell
 cd backend
-npm install
-cp .env.example .env
-npm run dev
+Copy-Item .env.example .env
+npm.cmd install
 ```
-Terminal 2:
-```bash
+
+Editamos `backend/.env` com as variáveis necessárias. Por exemplo:
+
+```dotenv
+PORT=
+PAYMENT_MODE=
+DATA_DIR=
+FRONTEND_ORIGIN=
+JWT_SECRET=
+TWILIO_ACCOUNT_SID=
+TWILIO_AUTH_TOKEN=
+TWILIO_FROM=
+TWILIO_MESSAGING_SERVICE_SID=
+```
+
+| Variável | Finalidade |
+|:--|:--|
+| `PORT` | Porta de execução do backend |
+| `PAYMENT_MODE` | Modo de funcionamento dos pagamentos, incluindo demonstração |
+| `DATA_DIR` | Directório de persistência local |
+| `FRONTEND_ORIGIN` | Origens autorizadas a comunicar com a API |
+| `JWT_SECRET` | Segredo utilizado na autenticação |
+| `TWILIO_ACCOUNT_SID` | Identificador da conta Twilio |
+| `TWILIO_AUTH_TOKEN` | Credencial privada do serviço Twilio |
+| `TWILIO_FROM` | Remetente de SMS autorizado |
+| `TWILIO_MESSAGING_SERVICE_SID` | Identificador opcional do Messaging Service Twilio |
+
+**Os campos acima são intencionalmente apresentados sem valores.** Preenchemos apenas no ficheiro local `backend/.env`, conforme o ambiente utilizado. Não publicamos esse ficheiro nem credenciais reais.
+
+
+**Nunca publicamos credenciais reais.** Se não pretendermos testar SMS, deixamos os campos Twilio vazios. Para utilização de um Messaging Service, podemos configurar `TWILIO_MESSAGING_SERVICE_SID` em alternativa ao remetente, de acordo com a implementação.
+
+**3. Iniciar o backend (terminal 1)**
+
+```powershell
+cd backend
+node --env-file=.env src/server.js
+```
+
+Se já estivermos dentro da pasta `backend`, executamos apenas o comando `node`. Não fechamos este terminal enquanto utilizamos a API.
+
+**4. Iniciar o frontend (terminal 2)**
+
+```powershell
 cd frontend
-npm install
-npm run dev
+npm.cmd install
+npm.cmd run dev
 ```
-Abrir http://localhost:5173 e criar uma conta de farmácia. Depois adicionar stock.
 
-## Render
+Abrimos o endereço indicado pelo Vite, habitualmente **http://localhost:5173**.
 
-1. Publicar este projecto num repositório GitHub.
-2. No Render, escolher **New > Blueprint** e seleccionar o repositório, usando `render.yaml`.
-3. O serviço instala backend/frontend, compila Vue e usa o Express para servir o frontend e a API no mesmo domínio.
-4. Render cria JWT_SECRET e monta um disco em `/var/data`. **O disco persistente requer um plano compatível pago**. Sem ele, o ficheiro JSON pode perder-se em reinícios ou novas implantações.
-5. Verificar `/api/saude` e criar contas pelo formulário. **Não colocar contas nem passwords em repositórios.**
+> [!TIP]
+> No PowerShell, usamos `npm.cmd` caso a política de execução do Windows bloqueie `npm.ps1`. Assim, não precisamos de alterar a política de segurança do sistema.
 
-Para GitHub Pages, o frontend pode ser publicado separadamente, mas necessita de `VITE_API_URL` e configuração de CORS no Render; a configuração padrão é para um serviço único no Render.
+**5. Confirmar a comunicação**
 
-## Segurança e âmbito
+```powershell
+Invoke-RestMethod http://localhost:3001/api/saude
+Invoke-RestMethod http://localhost:3001/api/farmacias
+```
 
-- Cada gestor acede **apenas** ao stock e às encomendas da sua farmácia.
-- Senhas com bcrypt; JWT assinado e guardado no navegador para este protótipo.
-- A criação de farmácias é livre no protótipo e **não verifica licenças comerciais**. Em produção seria necessária aprovação.
-- M-Pesa/e-Mola: fluxos de teste; **não movimentam dinheiro**. A interface não deve afirmar cobrança real.
-- Persistência JSON é adequada para demonstração com um processo. Para utilização comercial ou múltiplas instâncias: PostgreSQL, transacções e integrações verificadas.
-- O envio SMS foi programado com a API Twilio, **mas só envia realmente** depois de configurar credenciais e um número de envio válido. O estado do provedor não comprova entrega ao destinatário; testar a recepção no telemóvel antes da apresentação.
-- O mapa da aplicação usa OpenStreetMap. Os dados de farmácias registadas são introduzidos pelos utilizadores.
+A rota `/api/saude` permite verificar se a API está activa e consultar o modo de pagamento e a configuração do SMS. A lista de farmácias pode estar vazia num ambiente recém-criado; isso não significa que o servidor esteja avariado.
 
-## Ficheiros centrais
-- `frontend/src/views/Login.vue`: login e registo (cliente/farmácia).
-- `frontend/src/components/SeleccionarLocal.vue`: seleccionar coordenadas no Leaflet.
-- `frontend/src/views/Gestao.vue`: stock, preços e encomendas da farmácia.
-- `backend/src/server.js`: rotas, autenticação, registo de farmácias, controlo de acesso e SSE.
-- `backend/src/store.js`: persistência e estado inicial vazio.
+### Se o frontend não comunicar com a API
 
-## Colaboração
-Cada elemento do Grupo 7 deve realizar commits num branch próprio e abrir um Pull Request. Declarar a utilização de IA no README/BRD.
+Podemos criar `frontend/.env.local` com:
 
+```dotenv
+VITE_API_URL=
+```
 
-## SMS: configuração das notificações de encomenda (requisito R3)
+Definimos localmente o endereço da API de acordo com o ambiente em que executamos o backend.
 
-1. Criar conta em https://www.twilio.com/ e seguir a configuração de Messaging/SMS. Para ensaios gratuitos, verificar o número destinatário e as restrições de modelos, país e conta. A configuração de SMS real pode requerer conta paga; não há envio real sem credenciais.
-2. Em `backend/.env` (não enviar ao GitHub), configurar `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN` e `TWILIO_FROM` (ou `TWILIO_MESSAGING_SERVICE_SID`).
-3. Reiniciar backend. Verificar `GET /api/saude`: `smsConfigurado` deverá ser `true`.
-4. No carrinho, marcar **Quero receber a confirmação ... por SMS** e indicar o telefone. Na nova encomenda, o backend envia a mensagem separadamente; a compra não falha por problemas no fornecedor de SMS.
-5. Os números utilizados devem pertencer aos próprios utilizadores ou ter consentimento dos destinatários. Nenhum segredo é enviado ao navegador. O serviço Twilio tem custos/restrições próprios e na conta de avaliação o conteúdo pode ficar limitado a modelos predefinidos.
+Também verificamos se `FRONTEND_ORIGIN` inclui a origem exacta usada no navegador (`localhost` ou `127.0.0.1`). Reiniciamos os processos após alterações aos ficheiros `.env`.
 
-## Validação M-Pesa / e-Mola
+## 🔌 API e integrações
 
-- M-Pesa: 84 ou 85 + sete dígitos; e-Mola: 86 ou 87 + sete dígitos.
-- Um número de outro operador devolve erro de validação antes de reservar stock.
-- `PAYMENT_MODE=demo` activa apenas o fluxo de pagamento de teste; não há débito bancário, callback ou confirmação oficial de operadora. Não apresentar transacção de teste como cobrança real.
-- Testes automáticos: `cd backend && npm test`.
+A nossa API utiliza o prefixo `/api`. Entre as rotas identificadas no backend estão:
 
-## GitHub Pages + Render (requisitos R4-R6)
+| Método | Rota | Finalidade |
+|:--|:--|:--|
+| `GET` | `/api/saude` | Consultar o estado do serviço |
+| `GET` | `/api/farmacias` | Listar farmácias e, com coordenadas, calcular proximidade |
+| `POST` | `/api/pedidos/:id/simular-pagamento` | Aprovar ou recusar pagamento de demonstração, com autenticação |
+| `PATCH` | `/api/pedidos/:id/estado` | Actualizar o estado de uma encomenda, com permissões de gestor |
+| `PATCH` | `/api/stock/:farmaciaId/:medicamentoId` | Actualizar quantidade e preço com verificação de versão |
 
-O enunciado exige **ambos**: código num GitHub público e o frontend acessível pelo **GitHub Pages**; o **Render** fica com a API Node.js e os dados.
+As rotas protegidas exigem autenticação e as permissões correspondentes. A documentação acima apresenta exemplos representativos e não substitui a consulta do código-fonte para a lista integral de endpoints.
 
-1. Criar repositório público, colocar a pasta `frontend/`, `backend/`, `render.yaml` e `.github/workflows/pages.yml` na raiz.
-2. Cada membro cria branch próprio, faz commit e abre Pull Request, revisto por outro colega, com merge no `main`. Não criar commits por terceiros nem partilhar segredos.
-3. Criar no Render o serviço pelo `render.yaml`, configurar `JWT_SECRET` (gerado), `FRONTEND_ORIGIN=https://<utilizador>.github.io` e as variáveis Twilio em **Environment**. O plano com disco persistente é pago. Se se desejar ambiente gratuito com persistência, substituir o JSON por uma base de dados alojada externamente.
-4. No repositório GitHub, em **Settings > Secrets and variables > Actions > Variables**, criar `VITE_API_URL` com `https://<nome-do-servico>.onrender.com` (sem `/api`).
-5. Em **Settings > Pages**, usar a fonte **GitHub Actions**. O workflow compila o frontend com a base correcta do nome do repositório.
-6. Confirmar no GitHub Pages mapa, login, detalhe `#/medicamento/:id`, carrinho, notificações e estados vazios/erro. Confirmar nas DevTools que os pedidos `/api` vão para o Render.
-7. Inserir os links do repositório e GitHub Pages na capa do BRD e no README antes da entrega.
+### 💳 Pagamentos: validação e demonstração
 
-### Requisitos do enunciado (estado)
+Distinguimos a **validação do número** da **execução de uma transacção financeira**.
 
-| Código | Entrega no projecto | Confirmação exigida |
-|---|---|---|
-| R1 | Vue 3, Vite, Composition API | `npm run build` e navegador |
-| R2 | Overpass / OpenStreetMap Maputo com `fetch`, loading e erro | Testar a API em ligação real |
-| R3 | Envio SMS através da API Twilio no backend | Configurar conta e receber SMS |
-| R4 | Workflow de GitHub Pages incluído | Publicar e testar link público |
-| R5 | README + estrutura para GitHub | Criar repositório público |
-| R6 | Instruções para branches e PRs | Cada integrante deve realizar a sua contribuição |
+| Método | Prefixos aceites | Comportamento |
+|:--|:--|:--|
+| M-Pesa | `84`, `85` | Validamos o formato e permitimos demonstração do pagamento |
+| e-Mola | `86`, `87` | Validamos o formato e permitimos demonstração do pagamento |
+| Presencial | — | Registamos a opção de pagamento presencial |
 
-Também inclui rota dinâmica `/medicamento/:id`, rota inexistente, componentes com `props`/`emits`, composable e validação de formulário.
+Com `PAYMENT_MODE=demo`, a aprovação ou recusa é simulada dentro da aplicação. **Não movimentamos dinheiro real nem confirmamos pagamentos junto de operadoras financeiras.**
 
-### Dados e fontes
-- Farmácias no mapa: OpenStreetMap, consultado por Overpass API, `amenity=pharmacy` em Maputo. A disponibilidade da API pública e o conteúdo podem variar.
-- OSM licencia os dados sob ODbL e exige atribuição; os dados de localização não incluem inventário.
-- O catálogo genérico e os registos de stock são dados da aplicação; não são extraídos do OpenStreetMap.
+### 📲 SMS: Twilio
 
-### Ferramentas utilizadas
-ChatGPT (OpenAI) auxiliou a estruturação, a revisão e partes do código. Os membros do grupo devem testar e compreender a aplicação e declarar esse uso na submissão.
+Ligámos o backend à API Twilio para preparar notificações de encomendas. Mantemos o SID, o token e a identificação do remetente em variáveis de ambiente privadas.
 
-## Responsabilidades do Grupo 7
+**Importante:** uma resposta `queued` ou `enviado_ao_provedor` significa que o fornecedor aceitou o pedido de envio; não garante, por si só, a entrega ao destinatário. Em contas de avaliação, o Twilio pode aceitar apenas modelos de SMS predefinidos. Para mensagens personalizadas em produção, é necessário cumprir os requisitos da conta e do remetente.
 
-Consultar [`RESPONSABILIDADES_GRUPO7.md`](./RESPONSABILIDADES_GRUPO7.md) para a ligação entre cada membro, os ficheiros concretos desta versão, tarefas, branches e ordem de integração. Os guias individuais acompanham a entrega do grupo.
+## 🛡️ Segurança e integridade
+
+Adoptámos medidas básicas de protecção e consistência:
+
+- **Segredos no servidor:** credenciais em `.env`, nunca no código público do frontend.
+- **CORS:** restringimos as origens autorizadas da aplicação.
+- **Protecção HTTP:** utilizamos Helmet e limites de pedidos nas rotas de autenticação.
+- **Permissões:** distinguimos operações de cliente e de gestor de farmácia.
+- **Stock:** validamos quantidades, preços e versões antes de actualizar registos.
+- **Histórico:** registamos alterações de estado de encomendas.
+- **Persistência:** guardamos o estado local em JSON, com escrita através de ficheiro temporário.
+
+> [!WARNING]
+> A persistência em JSON é adequada ao contexto actual do projecto e à demonstração local, mas não deve ser apresentada como uma solução de base de dados transaccional preparada para grande escala. Para produção, precisamos de reforçar concorrência, auditoria, backups e persistência.
+
+## 🧪 Testes e validação
+
+Executamos os testes automatizados dos pagamentos com:
+
+```powershell
+cd backend
+node --test src/pagamentos.test.js
+```
+
+Os testes existentes verificam a aceitação e rejeição dos prefixos M-Pesa/e-Mola, a recusa de números inválidos, a opção de pagamento presencial e o comportamento de demonstração.
+
+Para verificar a compilação da interface:
+
+```powershell
+cd frontend
+npm.cmd run build
+```
+
+Também realizamos testes manuais de navegação, ligação à API, consulta de farmácias e integração SMS. **O sucesso de uma compilação não equivale à validação de todos os fluxos de negócio**, pelo que continuamos a testar cada percurso de ponta a ponta.
+
+## 🧭 Próximas melhorias
+
+Como evolução do projecto, pretendemos aprofundar os testes de integração e de interface, melhorar a documentação de todas as rotas, reforçar a persistência para cenários concorrentes e preparar uma publicação estável do frontend e do backend. Qualquer integração com pagamentos reais exigirá uma implementação própria, credenciais oficiais e validação segura junto dos respectivos fornecedores.
+
+## 👥 Equipa do Grupo 7
+
+| Membro | Nº de estudante | Utilizador GitHub |
+|:--|:--:|:--|
+| Armando Macamo | 8106 | [@armando-liedson-dev](https://github.com/armando-liedson-dev) |
+| Anik Taju | 8650 | [@AnikTaju-code](https://github.com/AnikTaju-code) |
+| Narciso Boa | 6359 | [@Narcissus-Celxoa](https://github.com/Narcissus-Celxoa) |
+| Sousa Marufo | 8428 | [@marufosousa](https://github.com/marufosousa) |
+
+## 🤝 Trabalho em equipa
+
+Desenvolvemos o FarmaRede de forma colaborativa, com branches individuais e integração progressiva de funcionalidades. Utilizamos o GitHub para preservar o histórico de alterações, facilitar revisões e organizar a contribuição dos membros.
+
+**Repositório:** [AnikTaju-code/FarmaRede](https://github.com/AnikTaju-code/FarmaRede)
+
+**Branches de trabalho:** `Anik`, `Armando`, `Narciso` e `Sousa`, além da branch `main`.
+
+Antes de integrar alterações, verificamos a branch activa, executamos os testes relevantes e revemos os ficheiros modificados. Evitamos incluir `.env`, `node_modules`, `dist` e backups locais nos commits.
+
+## 🤖 Ferramentas de apoio e integridade académica
+
+Durante a preparação da documentação do FarmaRede, recorremos ao **ChatGPT (OpenAI)** como ferramenta de apoio à estruturação, revisão linguística e verificação da cobertura dos requisitos do README e do BRD. A equipa é responsável por rever, compreender e validar os conteúdos entregues.
+
+Antes da submissão, registaremos aqui quaisquer **outras ferramentas de IA efectivamente utilizadas** no código, nos testes, no desenho ou na pesquisa, identificando a ferramenta, a finalidade e a parte do projecto em que foi utilizada. Não atribuímos a ferramentas de IA actividades cuja utilização não tenha sido confirmada pela equipa.
+
+As bibliotecas e os serviços externos utilizados encontram-se identificados nas secções **Tecnologias**, **Fontes de dados** e **API e integrações**. Respeitamos as respectivas condições de utilização e atribuição.
+
+## 🎓 Contexto académico
+
+Este projecto foi desenvolvido no âmbito da unidade curricular de **Programação Web II**, no **Instituto Superior de Transportes e Comunicações (ISUTC)**. Procuramos aplicar, num cenário prático, conceitos de desenvolvimento web, APIs, componentes reutilizáveis, autenticação, regras de negócio, integração com serviços externos e colaboração com Git.
+
+---
+
+<div align="center">
+
+### 💚 FarmaRede
+
+**Construímos tecnologia para aproximar pessoas, farmácias e cuidados de saúde.**
+
+*Projecto académico · Desenvolvido em equipa*
+
+</div>
