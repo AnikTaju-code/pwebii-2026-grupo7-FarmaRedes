@@ -3,9 +3,8 @@ services:
     name: farmarede-api-grupo7
     runtime: node
     plan: starter
-    rootDir: backend
-    buildCommand: npm ci
-    startCommand: npm start
+    buildCommand: npm --prefix backend ci && npm --prefix frontend ci && npm --prefix frontend run build
+    startCommand: npm --prefix backend start
     healthCheckPath: /api/saude
     envVars:
       - key: NODE_ENV
