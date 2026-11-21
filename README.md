@@ -24,11 +24,11 @@
 
 | Recurso | Endereço |
 |:--|:--|
-| **Código-fonte público** | [GitHub — FarmaRede](https://github.com/AnikTaju-code/FarmaRede) |
-| **Aplicação no GitHub Pages** | **Pendente de confirmação:** inserir aqui o endereço público da aplicação após verificar a publicação |
+| **Código-fonte público** | [GitHub — FarmaRede](https://github.com/AnikTaju-code/pwebii-2026-grupo7-FarmaRedes) |
+| **Aplicação no GitHub Pages** | [Abrir FarmaRede](https://aniktaju-code.github.io/pwebii-2026-grupo7-FarmaRedes/) |
 
-> [!WARNING]
-> O endereço do GitHub Pages ainda não foi confirmado. Antes da entrega, substituímos esta indicação pelo URL real e verificamos que a aplicação abre num navegador sem autenticação.
+> [!NOTE]
+> O endereço do GitHub Pages foi fornecido pela equipa. O GitHub Pages aloja o frontend estático; funcionalidades que dependem da API exigem que o backend esteja publicado e acessível separadamente.
 
 ## 🌍 A nossa proposta
 
@@ -158,11 +158,11 @@ Precisamos de **Node.js**, **npm** e **Git**. Os comandos abaixo são apresentad
 **1. Obter o projecto**
 
 ```powershell
-git clone https://github.com/AnikTaju-code/FarmaRede.git
-cd FarmaRede
+git clone https://github.com/AnikTaju-code/pwebii-2026-grupo7-FarmaRedes.git
+cd pwebii-2026-grupo7-FarmaRedes
 ```
 
-> Para trabalhar especificamente na branch de integração do Sousa, executamos `git switch Sousa` após `git fetch origin`. Não alteramos a branch principal sem coordenação da equipa.
+> Para colaborar, confirmamos a branch disponível no repositório e seguimos o fluxo de integração definido pela equipa antes de publicar alterações na `main`.
 
 **2. Configurar o backend**
 
@@ -330,9 +330,9 @@ Como evolução do projecto, pretendemos aprofundar os testes de integração e 
 
 Desenvolvemos o FarmaRede de forma colaborativa, com branches individuais e integração progressiva de funcionalidades. Utilizamos o GitHub para preservar o histórico de alterações, facilitar revisões e organizar a contribuição dos membros.
 
-**Repositório:** [AnikTaju-code/FarmaRede](https://github.com/AnikTaju-code/FarmaRede)
+**Repositório:** [AnikTaju-code/pwebii-2026-grupo7-FarmaRedes](https://github.com/AnikTaju-code/pwebii-2026-grupo7-FarmaRedes)
 
-**Branches de trabalho:** `Anik`, `Armando`, `Narciso` e `Sousa`, além da branch `main`.
+**Organização Git:** utilizamos branches de trabalho e integramos as alterações na `main` de acordo com o fluxo acordado pela equipa.
 
 Antes de integrar alterações, verificamos a branch activa, executamos os testes relevantes e revemos os ficheiros modificados. Evitamos incluir `.env`, `node_modules`, `dist` e backups locais nos commits.
 
